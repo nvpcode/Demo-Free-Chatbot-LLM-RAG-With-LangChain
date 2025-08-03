@@ -67,6 +67,6 @@ streamlit run main.py
 ```
 
 
-## Contact
+## Liên hệ
 
-For questions, please contact via email: nguyenphuongv07@gmail.com.
+Có câu hỏi thắc mắc xin vui lòng liên hệ qua email: nguyenphuongv07@gmail.com.
