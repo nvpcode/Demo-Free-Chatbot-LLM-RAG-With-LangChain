@@ -65,3 +65,8 @@ Sau khi hoàn tất các bước cài đặt, chạy ứng dụng Streamlit bằ
 ```bash
 streamlit run main.py
 ```
+
+
+## Contact
+
+For questions, please contact via email: nguyenphuongv07@gmail.com.
