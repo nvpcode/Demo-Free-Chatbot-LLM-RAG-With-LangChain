@@ -2,6 +2,9 @@
 
 Dự án này xây dựng một chatbot thông minh sử dụng kiến trúc Retrieval-Augmented Generation (RAG), được triển khai bằng Streamlit, LangChain và sức mạnh từ các mô hình ngôn ngữ lớn (LLM) của Google Gemini. Chatbot có khả năng trả lời các câu hỏi dựa trên một kho tài liệu được cung cấp, giúp cung cấp thông tin chính xác và phù hợp với ngữ cảnh.
 
+## Demo
+![Sample Image](demo/demo.png)
+
 ## 🚀 Tính năng nổi bật
 
 - **Giao diện Web thân thiện**: Xây dựng bằng Streamlit, cho phép người dùng tương tác dễ dàng.
