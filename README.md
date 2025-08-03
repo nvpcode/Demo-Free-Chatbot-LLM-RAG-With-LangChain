@@ -1,4 +1,4 @@
-# Chatbot RAG với LangChain và Google Gemini
+# Free Chatbot RAG với LangChain và Google Gemini 
 
 Dự án này xây dựng một chatbot thông minh sử dụng kiến trúc Retrieval-Augmented Generation (RAG), được triển khai bằng Streamlit, LangChain và sức mạnh từ các mô hình ngôn ngữ lớn (LLM) của Google Gemini. Chatbot có khả năng trả lời các câu hỏi dựa trên một kho tài liệu được cung cấp, giúp cung cấp thông tin chính xác và phù hợp với ngữ cảnh.
 
@@ -10,7 +10,7 @@ Dự án này xây dựng một chatbot thông minh sử dụng kiến trúc Ret
 - **Giao diện Web thân thiện**: Xây dựng bằng Streamlit, cho phép người dùng tương tác dễ dàng.
 - **Hỗ trợ đa dạng định dạng tài liệu**: Có thể tải lên và xử lý các tệp `.txt`, `.docx`, và `.pdf`.
 - **Cơ chế Retrieval tiên tiến**: Kết hợp giữa tìm kiếm dựa trên vector (FAISS) và tìm kiếm dựa trên từ khóa (BM25) để tăng độ chính xác của thông tin được truy xuất.
-- **Tích hợp Google Gemini**: Sử dụng các mô hình mạnh mẽ như `gemini-1.5-flash` và `gemini-1.5-pro` để tạo ra câu trả lời chất lượng cao.
+- **Tích hợp Google Gemini**: Sử dụng các mô hình mạnh mẽ như `gemini-2.5-flash` và `gemini-2.5-pro` để tạo ra câu trả lời chất lượng cao.
 - **Lưu trữ và quản lý lịch sử hội thoại**: Giúp chatbot duy trì ngữ cảnh trong suốt cuộc trò chuyện.
 - **Cấu hình linh hoạt**: Cho phép người dùng tùy chọn mô hình embedding và mô hình LLM ngay trên giao diện.
 
