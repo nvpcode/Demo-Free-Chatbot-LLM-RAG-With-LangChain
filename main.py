@@ -4,7 +4,7 @@ import os
 from langchain_community.callbacks.streamlit import StreamlitCallbackHandler
 from langchain_community.chat_message_histories import StreamlitChatMessageHistory
 from seed_data import load_data_from_folder, vector_store
-from llm_gemini import func_retriever, get_llm
+from llm_gemini import get_retriever, get_llm_and_agent
 
 def setup_page():
     st.set_page_config(
@@ -78,36 +78,45 @@ def setup_chat_interface(model_choice):
 
     return msgs
 
-def process_user_message(msgs, retriever, model_choice):
-    if prompt := st.chat_input("Hãy nhập câu hỏi của bạn..."):
-        # Hiển thị câu hỏi
+def handle_user_input(msgs, agent_executor):
+    """
+    Xử lý khi người dùng gửi tin nhắn:
+    1. Hiển thị tin nhắn người dùng
+    2. Gọi AI xử lý và trả lời
+    3. Lưu vào lịch sử chat
+    """
+    if prompt := st.chat_input("Hãy nhập câu hỏi của bạn:"):
+        # Lưu và hiển thị tin nhắn người dùng
         st.session_state.messages.append({"role": "human", "content": prompt})
-        with st.chat_message("human"):
-            st.markdown(prompt)
+        st.chat_message("human").write(prompt)
         msgs.add_user_message(prompt)
 
-        # Tạo callback và lấy lịch sử
+        # Xử lý và hiển thị câu trả lời
         with st.chat_message("assistant"):
-            
-            last_response = ""
-            for msg in reversed(st.session_state.messages[:-1]):
-                if msg["role"] == "assistant":
-                    last_response = msg["content"]
-                    break
-
-            # Ghép context từ câu trả lời gần nhất
-            full_prompt = f"{last_response}\nCâu hỏi: {prompt}" if last_response else prompt
-
-            # Gọi model  
-            llm, final_prompt = get_llm(full_prompt, retriever, model_choice)
             st_callback = StreamlitCallbackHandler(st.container())
-            response = llm.invoke(final_prompt, config={"callbacks": [st_callback]})
-            answer = response.content if hasattr(response, "content") else str(response)
-            st.markdown(answer)
+            
+            # Lấy lịch sử chat
+            chat_history = [
+                {"role": msg["role"], "content": msg["content"]}
+                for msg in st.session_state.messages[:-1]
+            ]
+
+            # Gọi AI xử lý
+            response = agent_executor.invoke(
+                {
+                    "input": prompt,
+                    "chat_history": chat_history,
+                    "tool_names": [tool.name for tool in agent_executor.tools]
+                },
+                {"callbacks": [st_callback]}
+            )
 
 
-        st.session_state.messages.append({"role": "assistant", "content": answer})
-        msgs.add_ai_message(answer)
+            # Lưu và hiển thị câu trả lời
+            output = response["output"]
+            st.session_state.messages.append({"role": "assistant", "content": output})
+            msgs.add_ai_message(output)
+            st.write(output)
 
 def main():
     initialize_app()
@@ -124,10 +133,11 @@ def main():
         return  # Dừng lại, không chạy tiếp main
     else:
         vector = vector_store(all_chunks, embeddings_choice)
-        retriever = func_retriever(vector)
+        retriever = get_retriever(vector)
 
     # Chat
-    process_user_message(msgs, retriever, model_choice)
+    agent_executor = get_llm_and_agent(model_choice, retriever)
+    handle_user_input(msgs, agent_executor)
 
 if __name__ == "__main__":
     main()
