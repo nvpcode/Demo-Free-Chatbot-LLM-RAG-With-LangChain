@@ -1,14 +1,16 @@
 import os
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.prompts import PromptTemplate
 from langchain.retrievers import EnsembleRetriever
 from langchain_community.retrievers import BM25Retriever
+from langchain.tools.retriever import create_retriever_tool
+from langchain.agents import AgentExecutor, create_openai_functions_agent
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder  # Xử lý prompt
 
 from dotenv import load_dotenv
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
-def func_retriever(vector_store):
+def get_retriever(vector_store):
     """
     Kết hợp FAISS retriever (dựa trên embedding) và BM25 retriever (dựa trên từ khóa)
     theo tỷ trọng 7:3.
@@ -34,7 +36,8 @@ def func_retriever(vector_store):
 
     return ensemble_retriever
 
-def get_llm(question, retriever, model_choice):
+
+def get_llm_and_agent(model_choice, retriever):
     """
     Khởi tạo LLM của Google Gemini
     """
@@ -43,26 +46,32 @@ def get_llm(question, retriever, model_choice):
         model= model_choice,
         temperature=0.01,
         google_api_key=GOOGLE_API_KEY,
-        streaming=True,
+        model_kwargs={"streaming": True},
     )
 
-    retrieved_docs = retriever.invoke(question)
-    context_text = "\n\n".join(doc.page_content for doc in retrieved_docs)
-
-    # Thiết lập prompt template
-    prompt = PromptTemplate(
-        template="""
-        Bạn là một trợ lý AI thân thiện.
-        Trả lời câu hỏi DỰA TRÊN thông tin dưới đây.
-        Nếu không đủ thông tin, hãy nói "Tôi không chắc từ tài liệu đã cho".
-
-        {context}
-
-        Câu hỏi: {question}
-        """,
-        input_variables=['context', 'question']
+    # Tạo công cụ tìm kiếm cho agent
+    tool = create_retriever_tool(
+        retriever,
+        "find",
+        "Search for information of a question in the knowledge base."
     )
+    tools = [tool]
 
-    final_prompt = prompt.format(context=context_text, question=question)
+    # Prompt template cho agent
+    system = """Bạn là chuyên gia về AI. Tên bạn là NVP-Chatbot.
+                Hãy trả lời dựa trên thông tin được cung cấp. 
+                Nếu không đủ thông tin, hãy nói: "Tôi không chắc chắn về tài liệu được cung cấp"."""
 
-    return llm, final_prompt
+    prompt = ChatPromptTemplate.from_messages([
+        ("system", system),
+        ("system", "You have access to the following tools: {tool_names}. Use them if needed."),
+        MessagesPlaceholder(variable_name="chat_history"),
+        ("human", "{input}"),
+        MessagesPlaceholder(variable_name="agent_scratchpad"),
+    ])
+
+
+    # Tạo agent
+    agent = create_openai_functions_agent(llm=llm, tools=tools, prompt=prompt)
+
+    return AgentExecutor(agent=agent, tools=tools, verbose=True)
