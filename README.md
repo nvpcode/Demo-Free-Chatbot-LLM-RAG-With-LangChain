@@ -1,11 +1,32 @@
-# FREE Chatbot RAG với LangChain và Google Gemini 
+# 💬 FREE NVP-Chatbot RAG | Trợ lý AI kết hợp Google Gemini + LangChain
 
-Dự án này xây dựng một chatbot thông minh sử dụng kiến trúc Retrieval-Augmented Generation (RAG), được triển khai bằng Streamlit, LangChain và sức mạnh từ các mô hình ngôn ngữ lớn (LLM) của Google Gemini. Chatbot có khả năng trả lời các câu hỏi dựa trên một kho tài liệu được cung cấp, giúp cung cấp thông tin chính xác và phù hợp với ngữ cảnh.
+Một hệ thống chatbot thông minh tích hợp mô hình ngôn ngữ lớn Google Gemini với cơ chế Retrieval-Augmented Generation (RAG) để truy xuất và trả lời từ các tài liệu do người dùng cung cấp.
 
 ## Demo
 ![Sample Image](demo/demo.png)
 
-## 🚀 Tính năng nổi bật
+## 🎯 Mục tiêu dự án
+
+Giúp người dùng đặt câu hỏi và nhận câu trả lời chính xác từ các tài liệu PDF, DOCX, hoặc TXT của riêng họ. Hệ thống tận dụng sức mạnh của LLM và retriever (FAISS + BM25) để đưa ra phản hồi chính xác, có dẫn chứng.
+
+## 🧠 Kiến trúc hệ thống
+
+```
+Người dùng ↔️ Streamlit UI ↔️ LangChain Agent ↔️ Google Gemini LLM
+                                ↘️ VectorStore (FAISS + BM25 từ tài liệu)
+```
+
+- LLM: Google Gemini (gemini-2.5-pro hoặc gemini-2.5-flash)
+
+- Retriever: Kết hợp FAISS (embedding) và BM25 (từ khóa)
+
+- VectorStore: FAISS
+
+- UI: Streamlit (hỗ trợ trò chuyện thời gian thực)
+
+- RAG pipeline: Truy xuất tài liệu → Trả lời có dẫn chứng
+
+## 🚀 Tính năng chính
 
 - **Giao diện Web thân thiện**: Xây dựng bằng Streamlit, cho phép người dùng tương tác dễ dàng.
 - **Hỗ trợ đa dạng định dạng tài liệu**: Có thể tải lên và xử lý các tệp `.txt`, `.docx`, và `.pdf`.
@@ -13,7 +34,6 @@ Dự án này xây dựng một chatbot thông minh sử dụng kiến trúc Ret
 - **Tích hợp Google Gemini**: Sử dụng các mô hình mạnh mẽ như `gemini-2.5-flash` và `gemini-2.5-pro` để tạo ra câu trả lời chất lượng cao.
 - **Lưu trữ và quản lý lịch sử hội thoại**: Giúp chatbot duy trì ngữ cảnh trong suốt cuộc trò chuyện.
 - **Cấu hình linh hoạt**: Cho phép người dùng tùy chọn mô hình embedding và mô hình LLM ngay trên giao diện.
-
 
 ## 🧱 Cấu trúc thư mục
 
@@ -24,21 +44,6 @@ Dự án này xây dựng một chatbot thông minh sử dụng kiến trúc Ret
 ├── data/                  # Thư mục chứa file tài liệu người dùng upload
 └── .env                   # Chứa GOOGLE_API_KEY (không public)
 ```
-
-
-## 🏛️ Kiến trúc
-
-Dự án tuân theo kiến trúc RAG, bao gồm hai giai đoạn chính:
-
-1.  **Truy xuất (Retrieval)**:
-    -   Khi người dùng tải lên tài liệu, nội dung sẽ được chia thành các đoạn nhỏ (chunks).
-    -   Các chunks này được chuyển đổi thành vector embedding bằng mô hình `models/embedding-001` của Google và được lưu trữ trong một cơ sở dữ liệu vector (FAISS).
-    -   Khi người dùng đặt câu hỏi, hệ thống sử dụng một `EnsembleRetriever` (kết hợp FAISS và BM25) để tìm kiếm và truy xuất các chunks tài liệu có liên quan nhất đến câu hỏi.
-
-2.  **Tạo sinh (Generation)**:
-    -   Các chunks tài liệu đã được truy xuất sẽ được đưa vào một prompt template cùng với câu hỏi của người dùng.
-    -   Prompt hoàn chỉnh này được gửi đến mô hình Gemini (ví dụ: `gemini-1.5-flash`).
-    -   Mô hình Gemini sẽ tạo ra một câu trả lời tự nhiên và chính xác dựa trên thông tin được cung cấp trong prompt.
 
 ## ⚙️ Cài đặt và Chạy dự án
 
@@ -66,6 +71,10 @@ Sau khi hoàn tất các bước cài đặt, chạy ứng dụng Streamlit bằ
 streamlit run main.py
 ```
 
+### 3. Tương tác
+- 📤 Upload file tài liệu từ sidebar.
+- 🧠 Đặt câu hỏi trong hộp thoại chat.
+- 💬 Chatbot sẽ tìm câu trả lời trong tài liệu bạn đã tải lên.
 
 ## Liên hệ
 
