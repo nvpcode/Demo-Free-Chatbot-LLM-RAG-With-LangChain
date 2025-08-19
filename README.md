@@ -1,4 +1,4 @@
-# 💬 FREE NVP-Chatbot RAG | Trợ lý AI kết hợp Google Gemini + LangChain
+# 💬 NVP-Chatbot RAG | Trợ lý AI kết hợp Google Gemini + LangChain
 
 Một hệ thống chatbot thông minh tích hợp mô hình ngôn ngữ lớn Google Gemini với cơ chế Retrieval-Augmented Generation (RAG) để truy xuất và trả lời từ các tài liệu do người dùng cung cấp.
 
